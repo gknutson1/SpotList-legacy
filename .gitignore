@@ -3,3 +3,4 @@
 /venv
 /cfg/client_id
 /cfg/client_secret
+/cfg/SpotList.db
