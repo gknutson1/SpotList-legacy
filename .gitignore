@@ -1,3 +1,5 @@
 /.idea
 /__pycache__
 /venv
+/cfg/client_id
+/cfg/client_secret

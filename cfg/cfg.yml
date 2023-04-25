@@ -1,0 +1,24 @@
+# File that contains the Spotify API id as plain text
+client_id_file:
+  - cfg
+  - client_id
+
+# File that contains the Spotify API secret as plain text
+client_secret_file:
+  - cfg
+  - client_secret
+
+# Address you specified in the callback address in the Spotify dashboard. Using ports other than 443 is not recommended.
+redirect_uri: http://localhost:5000
+
+# If true, the database file will be created if it does not exist, and required tables will be created.
+# If the database file exists, but any tables are missing, the missing tables will be created.
+# Already existing tables will NOT be overridden.
+# If required tables exist, but have the wrong schema, they will NOT be repaired.
+# If false, the program will exit with an error if the database file or any tables do not exist.
+create_database_if_missing: true
+
+# SQLite database file to use. Format as a list of folders ending with the file name. Relative to SpotList.py.
+database_file:
+  - cfg
+  - SpotList.db
