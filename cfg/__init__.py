@@ -69,7 +69,7 @@ def __setup__(config_file: Path) -> None:
         db = sqlite3.connect(db_file)
         # Check if the tables exist in the database. We only check that tables with the correct names exist,
         # and don't bother to validate if the tables are configured correctly.
-        for table in ['users', 'playlists']:
+        for table in ['users', 'playlists', 'rules']:
             # If a table exists in the database, it will have an entry in the `sqlite_master` table.
             # We can SELECT our table name and check if the result is `None` to see if it does not exist
             reply = db.execute(f"select name from sqlite_master where type = 'table' and name = '{table}'")
