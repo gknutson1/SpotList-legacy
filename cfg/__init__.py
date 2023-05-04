@@ -84,7 +84,7 @@ def __setup__(config_file: Path) -> None:
             create table if not exists users(
                 spotify_id    TEXT not null
                     constraint user_pk
-                        primary key,
+                        primary key on conflict replace,
                 access_token  TEXT not null,
                 refresh_token TEXT not null,
                 expires_at    INT  not null,
