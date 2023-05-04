@@ -26,12 +26,12 @@ def get_user(spotify_id: str, token: str) -> User:
 
 @app.post("/new/{user_id}", status_code=201)
 async def create_playlist(user_id: str):
-    return {"message": "Hello World"}
+    pass
 
 
 @app.get("/rules/{playlist_id}", status_code=200)
 async def get_rules(playlist_id: str):
-    return {"message": f"Hello"}
+    pass
 
 
 @app.put("/rules/{playlist_id}", status_code=204)
