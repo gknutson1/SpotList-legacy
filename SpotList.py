@@ -3,7 +3,8 @@ import uuid
 
 import fastapi
 import requests
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header, Request
+from fastapi.responses import JSONResponse
 
 import cfg
 from user import User, AuthorizationException
@@ -14,18 +15,9 @@ app = FastAPI(
         version="v0.0.1"
         )
 
-
-def get_user(spotify_id: str, token: str) -> User:
-    """
-    wraps User, and raises a http 401 if the id/token is incorrect
-    :param spotify_id:
-    :param token:
-    :return:
-    """
-    try:
-        return User(spotify_id, token)
-    except AuthorizationException as e:
-        raise fastapi.HTTPException(401, e)
+@app.exception_handler(AuthorizationException)
+async def authorization_exception_handler(request, exception):
+    return JSONResponse(status_code=401, content='username or password incorrect')
 
 
 @app.post("/new/{user_id}", status_code=201)
