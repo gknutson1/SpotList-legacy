@@ -8,7 +8,11 @@ from fastapi import FastAPI, HTTPException
 import cfg
 from user import User, AuthorizationException
 
-app = FastAPI()
+app = FastAPI(
+        title="SpotList API",
+        description="Allows users to crate automated playlists based on rulesets",
+        version="v0.0.1"
+        )
 
 
 def get_user(spotify_id: str, token: str) -> User:
