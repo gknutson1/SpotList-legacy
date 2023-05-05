@@ -24,8 +24,8 @@ api_url = "https://api.spotify.com"
 
 def __setup__(config_file: Path) -> None:
     """
-    Do all the setup in a function to avoid populating the module with variables
-    Do *NOT* call this outside of cfg/__init__.py
+    Do all the setup in a function to avoid populating the module with variables.
+    Do *NOT* call this outside of ``cfg/__init__.py``
     :param config_file: file that holds the yaml-formatted configuration file
     """
     if not config_file.exists():
@@ -85,6 +85,7 @@ def __setup__(config_file: Path) -> None:
                 spotify_id    TEXT not null
                     constraint user_pk
                         primary key on conflict replace,
+                display_name  TEXT not null,
                 access_token  TEXT not null,
                 refresh_token TEXT not null,
                 expires_at    INT  not null,
