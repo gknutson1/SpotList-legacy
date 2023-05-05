@@ -80,12 +80,14 @@ async def get_token(code: str, state: str):
     cfg.db.execute(f"""
         INSERT INTO users
             (spotify_id, 
+             display_name,
              access_token, 
              refresh_token, 
              expires_at, 
              app_password)
         VALUES 
             ('{user_data['id']}', 
+             '{user_data['display_name']}',
              '{user_auth['access_token']}', 
              '{user_auth['refresh_token']}', 
              '{user_auth['expires_in'] + time.time()}',
