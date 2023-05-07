@@ -58,8 +58,7 @@ async def get_auth_link():
                   "state": uuid.uuid4().hex,
                   "show_dialog": "true"}
     request = requests.get(f"https://accounts.spotify.com/authorize", params=parameters)
-    if not 200 <= request.status_code <= 299:
-        raise HTTPException(500, f"got status {request.status_code} from spotify when fetching authorization url")
+    request.raise_for_status()
     # Send the URL back to the user. All further requests from the user will need the token.
     return request.url
 
@@ -73,15 +72,13 @@ async def get_token(code: str, state: str):
                   "code": code,
                   "redirect_uri": f"{cfg.redirect_uri}"}
     request = requests.post(f"{cfg.auth_url}/api/token", params=parameters, headers=headers)
-    if not 200 <= request.status_code <= 299:
-        raise HTTPException(500, f"got status {request.status_code} from spotify when getting authorization token")
+    request.raise_for_status()
     user_auth = request.json()
 
     # Call the /me endpoint to get the user's spotify ID to use as the primary key for the database
     headers = {'Authorization': f'Bearer {user_auth["access_token"]}', 'Content-Type': 'application/json'}
     request = requests.get(f'{cfg.api_url}/v1/me', headers=headers)
-    if not 200 <= request.status_code <= 299:
-        raise HTTPException(500, f"got status {request.status_code} from spotify when getting user data")
+    request.raise_for_status()
     user_data = request.json()
 
     cfg.db.execute(f"""
