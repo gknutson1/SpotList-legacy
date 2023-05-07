@@ -21,23 +21,23 @@ async def authorization_exception_handler(request, exception):
 
 
 @app.post("/new/{user_id}", status_code=201)
-async def create_playlist(user_id: str):
-    pass
+async def create_playlist(user_id: Annotated[str, Header()], token: Annotated[str, Header()]):
+    return HTTPException(501)
 
 
 @app.get("/rules/{playlist_id}", status_code=200)
-async def get_rules(playlist_id: str):
-    pass
+async def get_rules(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
+    return HTTPException(501)
 
 
 @app.put("/rules/{playlist_id}", status_code=204)
-async def put_rules(playlist_id: str):
-    pass
+async def put_rules(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
+    return HTTPException(501)
 
 
 @app.put("/build/{playlist_id}", status_code=201)
-async def build_playlist(playlist_id: str):
-    pass
+async def build_playlist(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
+    return HTTPException(501)
 
 
 @app.get("/auth", status_code=303)
