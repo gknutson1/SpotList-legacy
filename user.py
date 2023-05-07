@@ -12,6 +12,7 @@ class AuthorizationException(Exception):
 
 class User:
     spotify_id: str
+    display_name: str
     access_token: str
     refresh_token: str
     expires_at: float
@@ -30,10 +31,11 @@ class User:
             raise AuthorizationException(f"Could not find user '{spotify_id}' with token '{token}' in database")
 
         self.spotify_id = user[0]
-        self.access_token = user[1]
-        self.refresh_token = user[2]
-        self.expires_at = user[3]
-        self.app_token = user[4]
+        self.display_name = user[1]
+        self.access_token = user[2]
+        self.refresh_token = user[3]
+        self.expires_at = user[4]
+        self.app_token = user[5]
 
     def refresh(self):
         pass
