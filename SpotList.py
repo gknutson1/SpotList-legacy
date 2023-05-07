@@ -1,9 +1,9 @@
 import time
 import uuid
+from typing import Annotated
 
-import fastapi
 import requests
-from fastapi import FastAPI, HTTPException, Header, Request
+from fastapi import FastAPI, HTTPException, Header, status
 from fastapi.responses import JSONResponse
 
 import cfg
