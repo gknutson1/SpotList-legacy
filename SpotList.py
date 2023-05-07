@@ -16,31 +16,38 @@ app = FastAPI(
         )
 
 @app.exception_handler(AuthorizationException)
-async def authorization_exception_handler(request, exception):
-    return JSONResponse(status_code=401, content='username or password incorrect')
+async def authorization_exception_handler(request, exception: AuthorizationException):
+    return JSONResponse('username or password incorrect', status.HTTP_401_UNAUTHORIZED)
 
 
-@app.post("/new/{user_id}", status_code=201)
+@app.exception_handler(requests.HTTPError)
+async def http_exception_handler(request, exception: requests.HTTPError):
+    return JSONResponse('encountered an error when communicating with the Spotify API', status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@app.post("/new", status_code=status.HTTP_201_CREATED)
 async def create_playlist(user_id: Annotated[str, Header()], token: Annotated[str, Header()]):
-    return HTTPException(501)
+    return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
 
-@app.get("/rules/{playlist_id}", status_code=200)
+@app.get("/rules/{playlist_id}", status_code=status.HTTP_200_OK)
 async def get_rules(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
-    return HTTPException(501)
+    return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
 
-@app.put("/rules/{playlist_id}", status_code=204)
+@app.put("/rules/{playlist_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def put_rules(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
-    return HTTPException(501)
+    return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
 
-@app.put("/build/{playlist_id}", status_code=201)
+@app.put("/build/{playlist_id}", status_code=status.HTTP_201_CREATED)
 async def build_playlist(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
-    return HTTPException(501)
+    return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
 
-@app.get("/auth", status_code=303)
+
+
+@app.get("/auth", status_code=status.HTTP_303_SEE_OTHER)
 async def get_auth_link():
     # Use our credentials to get the authorization url from Spotify
     parameters = {"response_type": "code", "client_id": cfg.client_id,
