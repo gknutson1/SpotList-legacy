@@ -1,5 +1,3 @@
-from time import gmtime
-
 import requests
 
 import cfg
@@ -20,16 +18,17 @@ class User:
     playlists: list[Playlist]
 
     def __init__(self, spotify_id: str, token: str) -> None:
-        search = cfg.db.execute(
-            f"SELECT * FROM users where spotify_id = '{spotify_id}' and app_password = '{token}'")
+        search = cfg.db.execute(f"SELECT * FROM users where spotify_id = '{spotify_id}' and app_password = '{token}'")
 
         user = search.fetchone()
 
         # fetchone() returns None if there are no more results to grab, so we can check user for None to see if the
         # login info was correct
         if not user:
+            print(f"login attempt with '{token}' as {spotify_id} failed")
             raise AuthorizationException(f"Could not find user '{spotify_id}' with token '{token}' in database")
 
+        print(f"login attempt with '{token}' as {spotify_id} succeeded")
         self.spotify_id = user[0]
         self.display_name = user[1]
         self.access_token = user[2]
@@ -49,9 +48,9 @@ class User:
         :param params: Any parameters to pass to Spotify with the request
         :return: The JSON response from Spotify, deserialized to a dict
         """
-        if self.expires_at <= gmtime():
-            pass
-            self.refresh(self)
+        # if self.expires_at <= gmtime():
+        #     pass
+        #     self.refresh(self)
 
         headers = {'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'}
         response = requests.request(method, f'{cfg.api_url}/v1{endpoint}', headers=headers, params=params)
