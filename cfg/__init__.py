@@ -67,13 +67,12 @@ def __setup__(config_file: Path) -> None:
             raise FileNotFoundError(f'database file {db_file} does not exist and "create_database_if_missing" is false')
 
         db = sqlite3.connect(db_file)
-        # Check if the tables exist in the database. We only check that tables with the correct names exist,
-        # and don't bother to validate if the tables are configured correctly.
+        # Check if the tables exist in the database. Currently, we only check that tables with the correct names exist,
+        # and don't bother to validate if the tables are configured correctly. This will likely change in the future.
         for table in ['users', 'playlists', 'rules']:
             # If a table exists in the database, it will have an entry in the `sqlite_master` table.
-            # We can SELECT our table name and check if the result is `None` to see if it does not exist
-            reply = db.execute(f"select name from sqlite_master where type = 'table' and name = '{table}'")
-            if not reply.fetchone():
+            reply = db.execute(f"SELECT EXISTS(SELECT true FROM sqlite_master WHERE name = '{table}' AND type = 'table')")
+            if not reply.fetchone()[0]:
                 raise sqlite3.DatabaseError(f'table {table} does not exist and "create_database_if_missing" is false')
 
     # If create_db is `true`, we can just call the database creation commands,
