@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException, Header, status
 from fastapi.responses import JSONResponse
 
 import cfg
+import return_types
 from user import User, AuthorizationException
 
 app = FastAPI(
@@ -23,9 +24,11 @@ async def authorization_exception_handler(request, exception: AuthorizationExcep
 
 @app.exception_handler(requests.HTTPError)
 async def http_exception_handler(request, exception: requests.HTTPError):
+    print(exception)
     return JSONResponse(
             'encountered an error when communicating with the Spotify API',
-            status.HTTP_500_INTERNAL_SERVER_ERROR)
+            status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 @app.post("/new", status_code=status.HTTP_201_CREATED)
@@ -48,6 +51,32 @@ async def build_playlist(user_id: Annotated[str, Header()], token: Annotated[str
     return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
 
+@app.get("/temp/playlists")
+async def get_playlists(user_id: Annotated[str, Header()], token: Annotated[str, Header()]) \
+        -> list[return_types.Playlist]:
+    user = User(user_id, token)
+    request = user.get('/me/playlists', {'limit': 50})
+    playlists = [return_types.Playlist.from_raw(i) for i in request['items']]
+
+    while request['next']:
+        request = user.get(request['next'].split('https://api.spotify.com/v1')[1])
+        playlists += [return_types.Playlist.from_raw(i) for i in request['items']]
+
+    return playlists
+
+
+@app.get("/temp/tracks/{playlist_id}")
+async def get_tracks(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str) \
+        -> list[return_types.PlaylistItem]:
+    user = User(user_id, token)
+    request = user.get(f'/playlists/{playlist_id}/tracks', {'limit': 50})
+    tracks = [return_types.PlaylistItem.from_raw(i) for i in request['items']]
+
+    while request['next']:
+        request = user.get(request['next'].split('https://api.spotify.com/v1')[1])
+        tracks += [return_types.PlaylistItem.from_raw(i) for i in request['items']]
+
+    return tracks
 
 
 @app.get("/auth", status_code=status.HTTP_303_SEE_OTHER)
