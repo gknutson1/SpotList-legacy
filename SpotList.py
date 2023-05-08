@@ -67,7 +67,7 @@ async def get_auth_link():
 
 
 # Once the user has authenticated with Spotify, they will be redirected here with their authorization code.
-@app.get("/callback", status_code=status.HTTP_200_OK)
+@app.get("/exchange", status_code=status.HTTP_200_OK, response_model=return_types.Auth)
 async def get_token(code: str, state: str):
     # Exchange the temporary authorization code for (semi-)permanent authorization credentials
     headers = {"Content-Type": "application/x-www-form-urlencoded", "Authorization": cfg.auth_header}
@@ -105,4 +105,4 @@ async def get_token(code: str, state: str):
 
     cfg.db.commit()
 
-    return {'spotify_id': user_data['id'], 'token': state}
+    return return_types.Auth(user_id=user_data['id'], token=state)
