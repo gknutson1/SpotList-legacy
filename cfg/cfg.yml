@@ -8,7 +8,7 @@ client_secret_file:
   - cfg
   - client_secret
 
-# Replace this with the address Spotify will redirect the user to once the user has Authorized the app.
+# Replace this with the Address Spotify will redirect the user to once the user has Authorized the app.
 # Must be also specified as a redirect URI in the Spotify Dashboard for the app.
 redirect_uri: https://localhost/callback
 
