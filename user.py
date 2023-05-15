@@ -1,3 +1,6 @@
+import time
+from datetime import datetime, timezone
+
 import requests
 
 import cfg
@@ -37,8 +40,24 @@ class User:
         self.app_token = user[5]
 
     def refresh(self):
-        pass
+        headers = {'grant_type': 'refresh_token', 'Authorization': self.refresh_token}
+        parameters = {'Authorization': cfg.auth_header, 'Content-Type': 'application/x-www-form-urlencoded'}
 
+        request = requests.post(f'{cfg.auth_url}/api/token', headers=headers, params=parameters)
+        request.raise_for_status()
+        request = request.json()
+
+        self.access_token = request['access_token']
+        self.expires_at = request['expires_in'] + time.time()
+
+        cfg.db.execute(f"""
+            UPDATE users SET 
+                access_token = '{self.access_token}', 
+                expires_at = '{self.expires_at}' 
+            WHERE spotify_id = '{self.spotify_id}'
+            """)
+
+        cfg.db.commit()
 
     def call_api(self, method: str, endpoint: str, params: dict = None, raw_url: bool = False) -> dict:
         """
@@ -57,11 +76,11 @@ class User:
 
         headers = {'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'}
         response = requests.request(
-            method,
-            f'{cfg.api_url}/v1{endpoint}' if not raw_url else endpoint,
-            headers=headers,
-            params=params
-        )
+                method,
+                f'{cfg.api_url}/v1{endpoint}' if not raw_url else endpoint,
+                headers=headers,
+                params=params
+                )
         response.raise_for_status()
         return response.json()
 
