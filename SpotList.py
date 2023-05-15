@@ -17,15 +17,9 @@ app = FastAPI(
     version="v0.0.1"
 )
 
-origins = [
-    "https://spotlist.patchyserver.xyz",
-    "http://localhost",
-    "http://localhost:8080",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=cfg.cors_urls,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

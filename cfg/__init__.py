@@ -15,6 +15,9 @@ db: sqlite3.Connection
 # Base64 encoded client id and secret. Used to refresh a user's access token.
 auth_header: str
 
+# Domains to allow CORS requests from
+cors_urls: list[str]
+
 # Spotify authorization url, for authenticating users
 auth_url = "https://accounts.spotify.com"
 
@@ -38,6 +41,7 @@ def __setup__(config_file: Path) -> None:
     global redirect_uri
     global db
     global auth_header
+    global cors_urls
 
     # Load everything from the config file
     try:
@@ -46,6 +50,7 @@ def __setup__(config_file: Path) -> None:
         redirect_uri = config_data['redirect_uri']
         db_file = Path(*config_data['database_file'])
         create_db = config_data['create_database_if_missing']
+        cors_urls = config_data['cors_urls']
     except KeyError as e:
         raise KeyError(f'Missing key "{e}" from config file "{config_file}"')
 
