@@ -4,6 +4,7 @@ from typing import Annotated
 
 import requests
 from fastapi import FastAPI, HTTPException, Header, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 import cfg
@@ -11,11 +12,24 @@ import return_types
 from user import User, AuthorizationException
 
 app = FastAPI(
-        title="SpotList API",
-        description="Allows users to crate automated playlists based on rulesets",
-        version="v0.0.1"
-        )
+    title="SpotList API",
+    description="Allows users to crate automated playlists based on rulesets",
+    version="v0.0.1"
+)
 
+origins = [
+    "https://spotlist.patchyserver.xyz",
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.exception_handler(AuthorizationException)
 async def authorization_exception_handler(request, exception: AuthorizationException):
