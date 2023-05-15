@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from return_types.spotify_user import SpotifyUser
+from models.spotify_user import SpotifyUser
 
 
 class Playlist(BaseModel):

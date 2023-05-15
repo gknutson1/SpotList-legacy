@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 import cfg
-import return_types
+import models
 from user import User, AuthorizationException
 
 app = FastAPI(
@@ -104,7 +104,7 @@ async def get_auth_link():
 
 
 # Once the user has authenticated with Spotify, they will be redirected here with their authorization code.
-@app.get("/exchange", status_code=status.HTTP_200_OK, response_model=return_types.Auth)
+@app.get("/exchange", status_code=status.HTTP_200_OK, response_model=models.Auth)
 async def get_token(code: str, state: str):
     # Exchange the temporary authorization code for (semi-)permanent authorization credentials
     headers = {"Content-Type": "application/x-www-form-urlencoded", "Authorization": cfg.auth_header}

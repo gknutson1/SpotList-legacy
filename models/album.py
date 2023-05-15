@@ -2,13 +2,8 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
-from return_types.spotify_user import SpotifyUser
-
-
-class AlbumType(str, Enum):
-    album = "album"
-    single = "single"
-    compilation = "compilation"
+from models.spotify_user import SpotifyUser
+from models.album_type import AlbumType
 
 
 class Album(BaseModel):
@@ -16,9 +11,8 @@ class Album(BaseModel):
     total_tracks: int = Field(description="Number of tracks in the album.")
     spotify_url: str = Field(title="Spotify URL", description="URL that opens the album in Spotify.")
     spotify_id: str = Field(title="Spotify ID", description="ID that can be used to access the album from the API.")
-    # Broken for some reason
-    # images: Optional[list[str]] = Field(description="A list of 0-3 thumbnail images for the album, "
-    #                                                 "returned by size in descending order.")
+    images: list[str] = Field(description="A list of 0-3 thumbnail images for the album, "
+                                          "returned by size in descending order.")
     name: str = Field(description="The name of the album.")
     release_date: str = Field(description="the date the album was released. May be accurate to year, month, or day.")
     genres: list[str] = Field(description="List of genres that the album is associated with. May be empty.")
@@ -35,8 +29,7 @@ class Album(BaseModel):
                 total_tracks=raw.get('total_tracks'),
                 spotify_url=raw.get('external_urls').get('spotify'),
                 spotify_id=raw.get('id'),
-                # Broken for some reason
-                # images=[i.get('url') for i in raw.get('images')],
+                images=[i.get('url') for i in raw.get('images')],
                 name=raw.get('name'),
                 release_date=raw.get('release_date'),
                 genres=raw.get('genres', []),

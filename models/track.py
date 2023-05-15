@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
-from return_types.album import Album
-from return_types.spotify_user import SpotifyUser
+from models.album import Album
+from models.spotify_user import SpotifyUser
 
 
 class Track(BaseModel):
