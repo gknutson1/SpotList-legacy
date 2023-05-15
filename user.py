@@ -39,56 +39,68 @@ class User:
     def refresh(self):
         pass
 
-    def call_api(self, method: str, endpoint: str, params: dict = None) -> dict:
+
+    def call_api(self, method: str, endpoint: str, params: dict = None, raw_url: bool = False) -> dict:
         """
         Uses the `requests` library to send requests to Spotify. Refreshes user token if needed. Should not be called
         directly - use the below wrappers (get, delete, etc.) instead.
         :param method: Type of request (get, delete, etc.) to preform
         :param endpoint: The path to use for the request
         :param params: Any parameters to pass to Spotify with the request
+        :param raw_url: If false, `endpoint` will be appended to the api url. If true, `endpoint` will be used directly.
         :return: The JSON response from Spotify, deserialized to a dict
         """
-        # if self.expires_at <= gmtime():
-        #     pass
-        #     self.refresh(self)
+
+        # If the access token has expired, refresh the token.
+        if self.expires_at <= datetime.now(timezone.utc).timestamp():
+            self.refresh()
 
         headers = {'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'}
-        response = requests.request(method, f'{cfg.api_url}/v1{endpoint}', headers=headers, params=params)
+        response = requests.request(
+            method,
+            f'{cfg.api_url}/v1{endpoint}' if not raw_url else endpoint,
+            headers=headers,
+            params=params
+        )
         response.raise_for_status()
         return response.json()
 
-    def get(self, endpoint: str, params: dict = None) -> dict:
+    def get(self, endpoint: str, params: dict = None, raw_url: bool = False) -> dict:
         """
         Send a GET request to the Spotify API
         :param endpoint: The path to use for the request
         :param params: Any parameters to pass to Spotify with the request
+        :param raw_url: If false, `endpoint` will be appended to the api url. If true, `endpoint` will be used directly.
         :return: The JSON response from Spotify, deserialized to a dict
         """
-        return self.call_api("get", endpoint, params)
+        return self.call_api("get", endpoint, params, raw_url)
 
-    def delete(self, endpoint: str, params: dict = None) -> dict:
+    def delete(self, endpoint: str, params: dict = None, raw_url: bool = False) -> dict:
         """
         Send a DELETE request to the Spotify API
         :param endpoint: The path to use for the request
         :param params: Any parameters to pass to Spotify with the request
+        :param raw_url: If false, `endpoint` will be appended to the api url. If true, `endpoint` will be used directly.
         :return: The JSON response from Spotify, deserialized to a dict
         """
-        return self.call_api("delete", endpoint, params)
+        return self.call_api("delete", endpoint, params, raw_url)
 
-    def post(self, endpoint: str, params: dict = None) -> dict:
+    def post(self, endpoint: str, params: dict = None, raw_url: bool = False) -> dict:
         """
         Send a POST request to the Spotify API
         :param endpoint: The path to use for the request
         :param params: Any parameters to pass to Spotify with the request
+        :param raw_url: If false, `endpoint` will be appended to the api url. If true, `endpoint` will be used directly.
         :return: The JSON response from Spotify, deserialized to a dict
         """
-        return self.call_api("post", endpoint, params)
+        return self.call_api("post", endpoint, params, raw_url)
 
-    def put(self, endpoint: str, params: dict = None) -> dict:
+    def put(self, endpoint: str, params: dict = None, raw_url: bool = False) -> dict:
         """
         Send a PUT request to the Spotify API
         :param endpoint: The path to use for the request
         :param params: Any parameters to pass to Spotify with the request
+        :param raw_url: If false, `endpoint` will be appended to the api url. If true, `endpoint` will be used directly.
         :return: The JSON response from Spotify, deserialized to a dict
         """
-        return self.call_api("put", endpoint, params)
+        return self.call_api("put", endpoint, params, raw_url)
