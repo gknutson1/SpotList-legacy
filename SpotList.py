@@ -146,4 +146,4 @@ async def get_token(code: str, state: str):
 
     cfg.db.commit()
 
-    return return_types.Auth(user_id=user_data['id'], token=state)
+    return models.Auth(user_id=user_data['id'], token=state)
