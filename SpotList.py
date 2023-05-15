@@ -34,9 +34,13 @@ async def authorization_exception_handler(request, exception: AuthorizationExcep
 async def http_exception_handler(request, exception: requests.HTTPError):
     print(exception)
     return JSONResponse(
-            'encountered an error when communicating with the Spotify API',
-            status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+        {'msg': 'encountered an error when communicating with the Spotify API', 'details': {
+                'code': exception.response.status_code,
+                'text': exception.response.text,
+                'url': exception.response.url
+                }},
+        status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
 
 
 @app.post("/new", status_code=status.HTTP_201_CREATED)
