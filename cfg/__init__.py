@@ -102,6 +102,7 @@ def __setup__(config_file: Path) -> None:
                 playlist_id TEXT not null
                     constraint playlist_pk
                         primary key,
+                created     INT not null,
                 last_built  INT,
                 owner       TEXT not null
                     constraint user_fk
@@ -115,7 +116,7 @@ def __setup__(config_file: Path) -> None:
                     constraint playlist_fk
                         references playlists,
                 rule_id    TEXT    not null,
-                data_json  TEXT    not null,
+                data       TEXT    not null,
                 exec_order INTEGER not null
             );
         ''')
