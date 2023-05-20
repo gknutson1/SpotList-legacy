@@ -7,6 +7,7 @@ from models.spotify_user import SpotifyUser
 class Track(BaseModel):
     album: Album = Field(description="The album the track belongs to.")
     artists: list[SpotifyUser] = Field(description="A list of artists credited with working on this track.")
+    available_markets: list[str] = Field(description="List of countries in which the track can be played.")
     disc_number: int = Field(description="The disc number (usually 1 unless the album consists of more than one disc).")
     duration: int = Field(description="Length of the track in milliseconds.")
     explicit: bool = Field(description="Whether or not the track has explicit lyrics."

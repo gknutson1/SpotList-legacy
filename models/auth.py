@@ -6,3 +6,4 @@ class Auth(BaseModel):
                                                       "passed into all further API calls as a header.")
     token: str = Field(description="Token to authenticate the user. Should be passed "
                                    "into all further API calls as a header.")
+    display_name: str = Field(description="Spotify user name for the user.")
