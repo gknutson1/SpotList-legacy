@@ -1,3 +1,4 @@
+import logging
 import time
 from datetime import datetime, timezone
 
@@ -18,7 +19,6 @@ class User:
     refresh_token: str
     expires_at: float
     app_token: str
-    playlists: list[Playlist]
 
     def __init__(self, spotify_id: str, token: str) -> None:
         search = cfg.db.execute(f"SELECT * FROM users where spotify_id = '{spotify_id}' and app_password = '{token}'")
@@ -28,10 +28,10 @@ class User:
         # fetchone() returns None if there are no more results to grab, so we can check user for None to see if the
         # login info was correct
         if not user:
-            print(f"login attempt with '{token}' as {spotify_id} failed")
+            logging.info(f"login attempt with '{token}' as {spotify_id} failed")
             raise AuthorizationException(f"Could not find user '{spotify_id}' with token '{token}' in database")
 
-        print(f"login attempt with '{token}' as {spotify_id} succeeded")
+        logging.info(f"login attempt with '{token}' as {spotify_id} succeeded")
         self.spotify_id = user[0]
         self.display_name = user[1]
         self.access_token = user[2]
