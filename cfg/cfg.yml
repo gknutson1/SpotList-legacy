@@ -18,6 +18,7 @@ cors_urls:
   - https://spotlist.patchyserver.xyz
   - http://localhost:8000
   - http://localhost
+  - https://localhost
 
 # If true, the database file will be created if it does not exist, and required tables will be created.
 # If the database file exists, but any tables are missing, the missing tables will be created.
