@@ -120,15 +120,17 @@ async def get_token(code: str, state: str):
     parameters = {"grant_type": "authorization_code",
                   "code": code,
                   "redirect_uri": f"{cfg.redirect_uri}"}
-    request = requests.post(f"{cfg.auth_url}/api/token", params=parameters, headers=headers)
-    request.raise_for_status()
-    user_auth = request.json()
+    response = requests.post(f"{cfg.auth_url}/api/token", params=parameters, headers=headers)
+    logging.info(f"got {response.status_code} from POST {response.url}")
+    response.raise_for_status()
+    user_auth = response.json()
 
     # Call the /me endpoint to get the user's spotify ID to use as the primary key for the database
     headers = {'Authorization': f'Bearer {user_auth["access_token"]}', 'Content-Type': 'application/json'}
-    request = requests.get(f'{cfg.api_url}/v1/me', headers=headers)
-    request.raise_for_status()
-    user_data = request.json()
+    response = requests.get(f'{cfg.api_url}/v1/me', headers=headers)
+    logging.info(f"got {response.status_code} from GET {response.url}")
+    response.raise_for_status()
+    user_data = response.json()
 
     cfg.db.execute(f"""
         INSERT INTO users
@@ -149,4 +151,4 @@ async def get_token(code: str, state: str):
 
     cfg.db.commit()
 
-    return models.Auth(user_id=user_data['id'], token=state)
+    return models.Auth(user_id=user_data['id'], token=state, display_name=user_data['display_name'])

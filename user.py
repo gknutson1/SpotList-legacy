@@ -28,10 +28,10 @@ class User:
         # fetchone() returns None if there are no more results to grab, so we can check user for None to see if the
         # login info was correct
         if not user:
-            logging.info(f"login attempt with '{token}' as {spotify_id} failed")
+            logging.info(f"login failed with '{token}' as {spotify_id}")
             raise AuthorizationException(f"Could not find user '{spotify_id}' with token '{token}' in database")
 
-        logging.info(f"login attempt with '{token}' as {spotify_id} succeeded")
+        logging.info(f"login succeeded with '{token}' as {spotify_id}")
         self.spotify_id = user[0]
         self.display_name = user[1]
         self.access_token = user[2]
@@ -40,15 +40,17 @@ class User:
         self.app_token = user[5]
 
     def refresh(self):
+        logging.info(f"refreshing token for {self.refresh_token}")
         headers = {'grant_type': 'refresh_token', 'Authorization': self.refresh_token}
         parameters = {'Authorization': cfg.auth_header, 'Content-Type': 'application/x-www-form-urlencoded'}
 
-        request = requests.post(f'{cfg.auth_url}/api/token', headers=headers, params=parameters)
-        request.raise_for_status()
-        request = request.json()
+        response = requests.post(f'{cfg.auth_url}/api/token', headers=headers, params=parameters)
+        logging.info(f"got {response.status_code} from POST {response.url}")
+        response.raise_for_status()
+        response = response.json()
 
-        self.access_token = request['access_token']
-        self.expires_at = request['expires_in'] + time.time()
+        self.access_token = response['access_token']
+        self.expires_at = response['expires_in'] + time.time()
 
         cfg.db.execute(f"""
             UPDATE users SET 
@@ -81,6 +83,7 @@ class User:
                 headers=headers,
                 params=params
                 )
+        logging.info(f"got {response.status_code} from {method} {response.url}")
         response.raise_for_status()
         return response.json()
 
@@ -92,7 +95,7 @@ class User:
         :param raw_url: If false, `endpoint` will be appended to the api url. If true, `endpoint` will be used directly.
         :return: The JSON response from Spotify, deserialized to a dict
         """
-        return self.call_api("get", endpoint, params, raw_url)
+        return self.call_api("GET", endpoint, params, raw_url)
 
     def delete(self, endpoint: str, params: dict = None, raw_url: bool = False) -> dict:
         """
@@ -102,7 +105,7 @@ class User:
         :param raw_url: If false, `endpoint` will be appended to the api url. If true, `endpoint` will be used directly.
         :return: The JSON response from Spotify, deserialized to a dict
         """
-        return self.call_api("delete", endpoint, params, raw_url)
+        return self.call_api("DELETE", endpoint, params, raw_url)
 
     def post(self, endpoint: str, params: dict = None, raw_url: bool = False) -> dict:
         """
@@ -112,7 +115,7 @@ class User:
         :param raw_url: If false, `endpoint` will be appended to the api url. If true, `endpoint` will be used directly.
         :return: The JSON response from Spotify, deserialized to a dict
         """
-        return self.call_api("post", endpoint, params, raw_url)
+        return self.call_api("POST", endpoint, params, raw_url)
 
     def put(self, endpoint: str, params: dict = None, raw_url: bool = False) -> dict:
         """
@@ -122,4 +125,4 @@ class User:
         :param raw_url: If false, `endpoint` will be appended to the api url. If true, `endpoint` will be used directly.
         :return: The JSON response from Spotify, deserialized to a dict
         """
-        return self.call_api("put", endpoint, params, raw_url)
+        return self.call_api("PUT", endpoint, params, raw_url)
