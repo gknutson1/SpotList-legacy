@@ -138,10 +138,11 @@ async def get_auth_link():
                   # the user belongs to. The user will use this to authenticate to SpotList as well.
                   "state": uuid.uuid4().hex,
                   "show_dialog": "true"}
-    request = requests.get(f"https://accounts.spotify.com/authorize", params=parameters)
-    request.raise_for_status()
+    response = requests.get(f"https://accounts.spotify.com/authorize", params=parameters)
+    logging.info(f"got {response.status_code} from POST {response.url}")
+    response.raise_for_status()
     # Send the URL back to the user. All further requests from the user will need the token.
-    return request.url
+    return response.url
 
 
 # Once the user has authenticated with Spotify, they will be redirected here with their authorization code.
