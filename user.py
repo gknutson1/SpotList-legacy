@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import requests
 
 import cfg
+import models
 from playlist import Playlist
 
 
@@ -52,14 +53,20 @@ class User:
         self.access_token = response['access_token']
         self.expires_at = response['expires_in'] + time.time()
 
-        cfg.db.execute(f"""
+        cfg.db.execute(
+            f"""
             UPDATE users SET 
                 access_token = '{self.access_token}', 
                 expires_at = '{self.expires_at}' 
             WHERE spotify_id = '{self.spotify_id}'
-            """)
+            """
+            )
 
         cfg.db.commit()
+
+    def get_playlists(self) -> list[models.Playlist]:
+        query = cfg.db.execute(f"SELECT * FROM playlists WHERE owner = '{self.spotify_id}'")
+        return [Playlist(**i) for i in query.fetchall()]
 
     def call_api(self, method: str, endpoint: str, params: dict = None, raw_url: bool = False) -> dict:
         """
