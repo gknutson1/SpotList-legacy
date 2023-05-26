@@ -4,7 +4,7 @@ import uuid
 from typing import Annotated
 
 import requests
-from fastapi import FastAPI, HTTPException, Header, status
+from fastapi import FastAPI, HTTPException, Header, status, Query, Path, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -49,49 +49,81 @@ async def http_exception_handler(request, exception: requests.HTTPError):
 
 
 @app.get("/search", status_code=status.HTTP_200_OK, response_model=models.SearchResult, name="Search Spotify for a object")
-async def search(user_id: Annotated[str, Header()], token: Annotated[str, Header()], types: list[str], query: str):
+async def search(
+        user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
+        token: Annotated[str, Header(description="Token of the active user.")],
+        types: Annotated[list[models.SearchType], Query(description="List of item types to search across.")],
+        query: Annotated[str, Query(description="Search query.")],
+        limit: Annotated[int, Query(ge=0, le=50, description="The maximum number of results to return.")],
+        offset: Annotated[int, Query(ge=0, le=1000, description="The index of the first result to return. Use with `limit` to get the next page of search results.")]
+        ):
     user = User(user_id, token)
     return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
 
 @app.get("/playlists", status_code=status.HTTP_200_OK, name="get list of a user's playlists")
-async def get_playlists(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
-    user = User(user_id, token)
-    return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
+async def get_playlists(
+        user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
+        token: Annotated[str, Header(description="Token of the active user.")]
+        ):
+    return User(user_id, token).get_playlists()
 
 
 @app.post("/playlist", status_code=status.HTTP_200_OK, name="Create a new playlist")
-async def create_playlist(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
+async def create_playlist(
+        user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
+        token: Annotated[str, Header(description="Token of the active user.")]
+        ):
     user = User(user_id, token)
     return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
 
 @app.get("/playlist/{playlist_id}", status_code=status.HTTP_200_OK, name="get details of a playlist")
-async def get_playlist_details(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
+async def get_playlist_details(
+        user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
+        token: Annotated[str, Header(description="Token of the active user.")],
+        playlist_id: Annotated[str, Path(description="ID of the playlist to fetch")]
+        ):
     user = User(user_id, token)
     return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
 
 @app.put("/playlist/{playlist_id}", status_code=status.HTTP_204_NO_CONTENT, name="set details of a playlist")
-async def set_playlist_details(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
+async def set_playlist_details(
+        user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
+        token: Annotated[str, Header(description="Token of the active user.")],
+        playlist_id: Annotated[str, Path(description="ID of the playlist to update")]
+        ):
     user = User(user_id, token)
     return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
 
 @app.get("/playlist/{playlist_id}/rules", status_code=status.HTTP_200_OK, name="get rules of a playlist")
-async def get_playlist_rules(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
+async def get_playlist_rules(
+        user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
+        token: Annotated[str, Header(description="Token of the active user.")],
+        playlist_id: Annotated[str, Path(description="ID of the playlist to fetch rules for")]
+        ):
     user = User(user_id, token)
     return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
 
 @app.put("/playlist/{playlist_id}/rules", status_code=status.HTTP_204_NO_CONTENT, name="set rules of a playlist")
-async def set_playlist_rules(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
+async def set_playlist_rules(
+        user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
+        token: Annotated[str, Header(description="Token of the active user.")],
+        playlist_id: Annotated[str, Path(description="ID of the playlist to set rules for")]
+        ):
     user = User(user_id, token)
     return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
 
 @app.put("/build/{playlist_id}", status_code=status.HTTP_201_CREATED, name="Compile a playlist and push to spotify")
-async def build_playlist(user_id: Annotated[str, Header()], token: Annotated[str, Header()], playlist_id: str):
+async def build_playlist(
+        user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
+        token: Annotated[str, Header(description="Token of the active user.")],
+        playlist_id: Annotated[str, Path(description="ID of the playlist to build")]
+        ):
     user = User(user_id, token)
     return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
 
@@ -114,7 +146,10 @@ async def get_auth_link():
 
 # Once the user has authenticated with Spotify, they will be redirected here with their authorization code.
 @app.get("/exchange", status_code=status.HTTP_200_OK, response_model=models.Auth, name="get login info for spotlist")
-async def get_token(code: str, state: str):
+async def get_token(
+        code: Annotated[str, Query(description="Code received from Spotify to exchange for authorization token.")],
+        state: Annotated[str, Query(description="String received from Spotify identifying the user to SpotList")]
+        ):
     # Exchange the temporary authorization code for (semi-)permanent authorization credentials
     headers = {"Content-Type": "application/x-www-form-urlencoded", "Authorization": cfg.auth_header}
     parameters = {"grant_type": "authorization_code",
