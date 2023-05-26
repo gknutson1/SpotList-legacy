@@ -72,6 +72,7 @@ def __setup__(config_file: Path) -> None:
             raise FileNotFoundError(f'database file {db_file} does not exist and "create_database_if_missing" is false')
 
         db = sqlite3.connect(db_file)
+        db.row_factory = sqlite3.Row
         # Check if the tables exist in the database. Currently, we only check that tables with the correct names exist,
         # and don't bother to validate if the tables are configured correctly. This will likely change in the future.
         for table in ['users', 'playlists', 'rules']:
@@ -84,6 +85,7 @@ def __setup__(config_file: Path) -> None:
     # as they do not override and will do noting if the database/tables already exists
     if create_db:
         db = sqlite3.connect(db_file)
+        db.row_factory = sqlite3.Row
         db.execute('''
             create table if not exists users(
                 spotify_id    TEXT not null
@@ -102,6 +104,9 @@ def __setup__(config_file: Path) -> None:
                 playlist_id TEXT not null
                     constraint playlist_pk
                         primary key,
+                name        TEXT not null,
+                description TEXT,
+                thumbnail   TEXT,
                 created     INT not null,
                 last_built  INT,
                 owner       TEXT not null
@@ -112,12 +117,12 @@ def __setup__(config_file: Path) -> None:
 
         db.execute('''
             create table if not exists rules(
-                playlist   TEXT    not null
+                playlist   TEXT not null
                     constraint playlist_fk
                         references playlists,
-                rule_id    TEXT    not null,
-                data       TEXT    not null,
-                exec_order INTEGER not null
+                rule_id    TEXT not null,
+                data       TEXT not null,
+                exec_order INT  not null
             );
         ''')
         db.commit()
