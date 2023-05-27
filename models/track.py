@@ -29,6 +29,7 @@ class Track(BaseModel):
         return Track(
                 album=Album.from_raw(raw.get('album')),
                 artists=[SpotifyUser.from_raw(i) for i in raw.get('artists')],
+                available_markets=raw.get('available_markets'),
                 disc_number=raw.get('disc_number'),
                 duration=raw.get('duration_ms'),
                 explicit=raw.get('explicit'),

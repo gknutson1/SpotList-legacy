@@ -1,5 +1,3 @@
-from enum import Enum
-
 from pydantic import BaseModel, Field
 
 from models.spotify_user import SpotifyUser
