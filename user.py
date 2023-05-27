@@ -33,12 +33,12 @@ class User:
             raise AuthorizationException(f"Could not find user '{spotify_id}' with token '{token}' in database")
 
         logging.info(f"login succeeded with '{token}' as {spotify_id}")
-        self.spotify_id = user[0]
-        self.display_name = user[1]
-        self.access_token = user[2]
-        self.refresh_token = user[3]
-        self.expires_at = user[4]
-        self.app_token = user[5]
+        self.spotify_id = user["spotify_id"]
+        self.display_name = user["display_name"]
+        self.access_token = user["access_token"]
+        self.refresh_token = user["refresh_token"]
+        self.expires_at = user["expires_at"]
+        self.app_token = user["app_password"]
 
     def refresh(self):
         logging.info(f"refreshing token for {self.refresh_token}")
