@@ -90,9 +90,9 @@ class User:
                 f'{cfg.api_url}/v1{endpoint}' if not raw_url else endpoint,
                 headers=headers,
                 params=params,
-                data=body
+                json=body
                 )
-        logging.info(f"got {response.status_code} from {method} {response.url}")
+        print(f"got {response.status_code} from {method} {response.url} {' with body ' + str(response.request.body) if body else ''}")
         response.raise_for_status()
         return response.json()
 
