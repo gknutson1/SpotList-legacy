@@ -42,10 +42,10 @@ class User:
 
     def refresh(self):
         logging.info(f"refreshing token for {self.refresh_token}")
-        headers = {'grant_type': 'refresh_token', 'Authorization': self.refresh_token}
-        parameters = {'Authorization': cfg.auth_header, 'Content-Type': 'application/x-www-form-urlencoded'}
+        headers = {'Authorization': cfg.auth_header, 'Content-Type': 'application/x-www-form-urlencoded'}
+        body = {'grant_type': 'refresh_token', 'refresh_token': self.refresh_token}
 
-        response = requests.post(f'{cfg.auth_url}/api/token', headers=headers, params=parameters)
+        response = requests.post(f'{cfg.auth_url}/api/token', headers=headers, data=body)
         logging.info(f"got {response.status_code} from POST {response.url}")
         response.raise_for_status()
         response = response.json()
