@@ -54,8 +54,8 @@ async def search(
         token: Annotated[str, Header(description="Token of the active user.")],
         types: Annotated[list[models.SearchType], Query(description="List of item types to search across.")],
         query: Annotated[str, Query(description="Search query.")],
-        limit: Annotated[int, Query(ge=0, le=50, description="The maximum number of results to return.")],
-        offset: Annotated[int, Query(ge=0, le=1000, description="The index of the first result to return. Use with `limit` to get the next page of search results.")]
+        limit: Annotated[int, Query(ge=0, le=50, description="The maximum number of results to return.", default=20)],
+        offset: Annotated[int, Query(ge=0, le=1000, description="The index of the first result to return. Use with `limit` to get the next page of search results.", default=0)]
         ):
     user = User(user_id, token)
     return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
@@ -64,7 +64,9 @@ async def search(
 @app.get("/playlists", status_code=status.HTTP_200_OK, name="get list of a user's playlists")
 async def get_playlists(
         user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
-        token: Annotated[str, Header(description="Token of the active user.")]
+        token: Annotated[str, Header(description="Token of the active user.")],
+        limit: Annotated[int, Query(ge=0, le=50, description="The maximum number of results to return.", default=20)],
+        offset: Annotated[int, Query(ge=0, le=1000, description="The index of the first result to return. Use with `limit` to get the next page of search results.", default=0)]
         ):
     return User(user_id, token).get_playlists()
 
@@ -102,7 +104,9 @@ async def set_playlist_details(
 async def get_playlist_rules(
         user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
         token: Annotated[str, Header(description="Token of the active user.")],
-        playlist_id: Annotated[str, Path(description="ID of the playlist to fetch rules for")]
+        playlist_id: Annotated[str, Path(description="ID of the playlist to fetch rules for")],
+        limit: Annotated[int, Query(ge=0, le=50, description="The maximum number of results to return.", default=20)],
+        offset: Annotated[int, Query(ge=0, le=1000, description="The index of the first result to return. Use with `limit` to get the next page of search results.", default=0)]
         ):
     user = User(user_id, token)
     return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
