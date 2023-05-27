@@ -58,7 +58,8 @@ async def search(
         offset: Annotated[int, Query(ge=0, le=1000, description="The index of the first result to return. Use with `limit` to get the next page of search results.")] = 0
         ):
     user = User(user_id, token)
-    return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
+    request = user.get("/search", params={"type": types, "q": query, "limit": limit, "offset": offset})
+    return models.SearchResult.from_raw(request)
 
 
 @app.get("/playlists", status_code=status.HTTP_200_OK, name="get list of a user's playlists")
