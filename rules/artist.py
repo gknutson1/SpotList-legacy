@@ -43,13 +43,6 @@ class Artist(BaseRule):
                         if not album_tracks['next']: break
                         album_tracks = user.get(album['next'], raw_url=True)
 
-
-
-                while True:
-                    print(album_tracks)
-                    if not album['tracks']["next"]: return tracks
-                    album_tracks = user.get(album['tracks']["next"], raw_url=True)
-
         return tracks
 
 
