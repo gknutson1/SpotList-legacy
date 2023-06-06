@@ -5,7 +5,7 @@ from models.album_type import AlbumType
 
 
 class Album(BaseModel):
-    album_type: AlbumType = Field(description="The type of the album - one of 'album', 'single' or 'compilation.")
+    album_type: AlbumType | None = Field(description="The type of the album - one of 'album', 'single' or 'compilation.")
     total_tracks: int = Field(description="Number of tracks in the album.")
     available_markets: list[str] = Field(description="List of countries in which the album can be played.")
     spotify_url: str = Field(title="Spotify URL", description="URL that opens the album in Spotify.")
@@ -24,7 +24,7 @@ class Album(BaseModel):
     @staticmethod
     def from_raw(raw: dict):
         return Album(
-                album_type=AlbumType(raw.get('album_type')),
+                album_type=AlbumType(raw.get('album_type')) if raw.get('album_type') else None,
                 total_tracks=raw.get('total_tracks'),
                 available_markets=raw.get('available_markets'),
                 spotify_url=raw.get('external_urls').get('spotify'),
