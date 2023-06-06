@@ -122,6 +122,11 @@ async def get_playlists(
     return User(user_id, token).get_playlists()
 
 
+@app.get("/rules", status_code=status.HTTP_200_OK, name="get a list of the currenly available rules", response_model=list[rules.RuleDescription])
+async def get_rules():
+        return (i.describe() for i in [rules.AfterDate, rules.Album, rules.Artist, rules.BeforeDate, rules.Genre, rules.LessPopular, rules.MorePopular])
+
+
 @app.post("/playlist", status_code=status.HTTP_200_OK, name="Create a new playlist", response_model=models.PlaylistCreationData)
 async def create_playlist(
         user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
@@ -192,7 +197,7 @@ async def set_playlist_rules(
         user_id: Annotated[str, Header(title="User ID", description="User ID of the active user.")],
         token: Annotated[str, Header(description="Token of the active user.")],
         playlist_id: Annotated[str, Path(description="ID of the playlist to set rules for")],
-        rule_list: Annotated[list[rules.RuleDescription], Body(description="List of rules to apply")],
+        rule_list: Annotated[list[rules.RuleData], Body(description="List of rules to apply")],
         ):
     user = User(user_id, token)
     query = cfg.db.execute(f"SELECT EXISTS(SELECT true FROM playlists WHERE playlist_id = '{playlist_id}' AND owner = '{user_id}')")

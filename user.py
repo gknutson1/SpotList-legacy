@@ -74,11 +74,10 @@ class User:
         playlist = query.fetchone()
         return models.Playlist(**playlist, rule_count=len(json.loads(playlist["rules"]))) if playlist else None
 
-    def get_playlist_rules(self, playlist_id: str) -> list[rules.BaseRule]:
+    def get_playlist_rules(self, playlist_id: str) -> list[rules.RuleDescription]:
         query = cfg.db.execute(f"SELECT * FROM playlists WHERE playlist_id = '{playlist_id}' AND owner = '{self.spotify_id}'")
         playlist = query.fetchone()
         return [rules.RuleDescription(**i) for i in json.loads(playlist["rules"])]
-
 
     def call_api(self, method: str, endpoint: str, params: dict = None, body: dict | bytes = None, raw_url: bool = False) -> dict:
         """

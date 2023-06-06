@@ -6,6 +6,14 @@ from pydantic import BaseModel, Field
 from models.track import Track
 
 
+class RuleType(str, Enum):
+    AfterDate = "AfterDate"
+    BeforeDate = "BeforeDate"
+    Album = "Album"
+    Genre = "Genre"
+    Artist = "Artist"
+    LessPopular = "LessPopular"
+    MorePopular = "MorePopular"
 
 class InputType(str, Enum):
     string = "string"
@@ -23,6 +31,11 @@ class RuleDescription(BaseModel):
     input_type: InputType = Field(description="What kind of input the rule can accept")
     rule_content: Any | None = Field(description="What value the rule is currently set to")
 
+
+class RuleData(BaseModel):
+    type: RuleType = Field(description="The type of the rule.")
+    data: Any = Field(description="the filter the user input.")
+    is_add: bool = Field(description="`True` if the rule is an Add rule, `False` if the rule is a Remove rule.")
 
 
 class BaseRule:
