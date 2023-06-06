@@ -15,7 +15,7 @@ class Track(BaseModel):
     spotify_url: str = Field(title="Spotify URL", description="URL that opens the album in Spotify.")
     spotify_id: str = Field(title="Spotify ID", description="ID that can be used to access the album from the API.")
     name: str = Field(description="Name of the track.")
-    popularity: str = Field(
+    popularity: int | None = Field(
         description="The popularity of the track. The value will be between 0 and 100, "
                     "with 100 being the most popular."
         )

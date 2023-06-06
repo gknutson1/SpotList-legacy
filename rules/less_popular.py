@@ -16,9 +16,9 @@ class LessPopular(BaseRule):
                 )
 
     @staticmethod
-    def add_tracks(user: User, tracks: list[Track], data: str) -> list[Track]:
-        pass
+    def remove_tracks(user: User, tracks: list[Track], data: int) -> list[Track]:
+        for i in tracks:
+            if i.popularity < data:
+                tracks.remove(i)
 
-    @staticmethod
-    def remove_tracks(user: User, tracks: list[Track], data: str) -> list[Track]:
-        pass
+        return tracks

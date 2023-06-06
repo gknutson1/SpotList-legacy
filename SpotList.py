@@ -224,13 +224,25 @@ async def build_playlist(
     rule_list = user.get_playlist_rules(playlist_id)
     tracks: list[models.track] = []
     for i in rule_list:
-        if i.type == rules.RuleType.Artist:
-            rule = rules.Artist
+        rule_type = rules.RuleType[i.type]
+
+        match rule_type:
+            case rules.RuleType.Artist: rule = rules.Artist
+            case rules.RuleType.Album: rule = rules.Album
+            case rules.RuleType.Genre: rule = rules.Genre
+            case rules.RuleType.MorePopular: rule = rules.MorePopular
+            case rules.RuleType.LessPopular: rule = rules.LessPopular
+            case rules.RuleType.BeforeDate: rule = rules.BeforeDate
+            case rules.RuleType.AfterDate: rule = rules.AfterDate
         if i.is_add:
             rule.add_tracks(user, tracks, i.data)
         else:
             rule.remove_tracks(user, tracks, i.data)
 
+    # user.put(f"/playlists/{playlist_id}/tracks", params={"uris": None})
+
+    for offset in range(0, len(tracks), 100):
+        user.post(f"/playlists/{playlist_id}/tracks", body={"uris": [f"spotify:track:{i['uri']}" for i in tracks[offset:offset + 100]]})
     return
 
 

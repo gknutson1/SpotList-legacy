@@ -16,9 +16,9 @@ class Genre(BaseRule):
                 )
 
     @staticmethod
-    def add_tracks(user: User, tracks: list[Track], data: str) -> list[Track]:
-        pass
-
-    @staticmethod
     def remove_tracks(user: User, tracks: list[Track], data: str) -> list[Track]:
-        pass
+        for i in tracks:
+            if data in i.album.genres:
+                tracks.remove(i)
+
+        return tracks

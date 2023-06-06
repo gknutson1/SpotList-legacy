@@ -32,9 +32,9 @@ class Artist(BaseRule):
                 album_tracks = album['tracks']['items']
 
                 while True:
-                    tracks += (Track.from_raw(i) for i in album_tracks if Track.from_raw(i) not in tracks)
-                    if not tracks["next"]: break
-                    album_tracks = user.get(album_tracks["next"], raw_url=True)
+                    tracks += (Track.from_raw(i | {"album": album}) for i in album_tracks if Track.from_raw(i | {"album": album}) not in tracks)
+                    if not album['tracks']["next"]: break
+                    album_tracks = user.get(album['tracks']["next"], raw_url=True)
 
         return tracks
 
