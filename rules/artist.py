@@ -31,9 +31,23 @@ class Artist(BaseRule):
             for album in request['albums']:
                 album_tracks = album['tracks']['items']
 
+                tracks += (Track.from_raw(i | {"album": album}) for i in album_tracks if
+                           Track.from_raw(i | {"album": album}) not in tracks)
+
+                if album['tracks']['next']:
+                    album_tracks = user.get(album['tracks']["next"], raw_url=True)
+                    while True:
+                        tracks += (Track.from_raw(i | {"album": album}) for i in album_tracks['items'] if
+                                   Track.from_raw(i | {"album": album}) not in tracks)
+
+                        if not album_tracks['next']: break
+                        album_tracks = user.get(album['next'], raw_url=True)
+
+
+
                 while True:
-                    tracks += (Track.from_raw(i | {"album": album}) for i in album_tracks if Track.from_raw(i | {"album": album}) not in tracks)
-                    if not album['tracks']["next"]: break
+                    print(album_tracks)
+                    if not album['tracks']["next"]: return tracks
                     album_tracks = user.get(album['tracks']["next"], raw_url=True)
 
         return tracks
