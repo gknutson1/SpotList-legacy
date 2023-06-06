@@ -6,6 +6,3 @@ class SearchType(str, Enum):
     artist = "artist"
     playlist = "playlist"
     track = "track"
-    show = "show"
-    episode = "episode"
-    audiobook = "audiobook"

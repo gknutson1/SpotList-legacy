@@ -14,7 +14,7 @@ class Album(BaseModel):
                                           "returned by size in descending order.")
     name: str = Field(description="The name of the album.")
     release_date: str = Field(description="the date the album was released. May be accurate to year, month, or day.")
-    genres: list[str] = Field(description="List of genres that the album is associated with. May be empty.")
+    genres: list[str] = Field(description="List of genres that the album is associated with. May be empty.", default=[])
     popularity: int | None = Field(description="The popularity of the album. The value will be between 0 and 100, "
                                                "with 100 being the most popular. May be `null` if album is not ranked.")
     album_group: None | AlbumType = Field(description="If fetched while getting an author's albums, indicates the"
@@ -26,6 +26,7 @@ class Album(BaseModel):
         return Album(
                 album_type=AlbumType(raw.get('album_type')),
                 total_tracks=raw.get('total_tracks'),
+                available_markets=raw.get('available_markets'),
                 spotify_url=raw.get('external_urls').get('spotify'),
                 spotify_id=raw.get('id'),
                 images=[i.get('url') for i in raw.get('images')],

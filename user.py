@@ -1,3 +1,4 @@
+import json
 import logging
 import time
 from datetime import datetime, timezone
@@ -6,7 +7,7 @@ import requests
 
 import cfg
 import models
-from playlist import Playlist
+import rules
 
 
 class AuthorizationException(Exception):
@@ -66,7 +67,18 @@ class User:
 
     def get_playlists(self) -> list[models.Playlist]:
         query = cfg.db.execute(f"SELECT * FROM playlists WHERE owner = '{self.spotify_id}'")
-        return [Playlist(**i) for i in query.fetchall()]
+        return [models.Playlist(**i, rule_count=len(json.loads(i["rules"]))) for i in query.fetchall()]
+
+    def get_playlist(self, playlist_id: str) -> models.Playlist:
+        query = cfg.db.execute(f"SELECT * FROM playlists WHERE playlist_id = '{playlist_id}' AND owner = '{self.spotify_id}'")
+        playlist = query.fetchone()
+        return models.Playlist(**playlist, rule_count=len(json.loads(playlist["rules"]))) if playlist else None
+
+    def get_playlist_rules(self, playlist_id: str) -> list[rules.BaseRule]:
+        query = cfg.db.execute(f"SELECT * FROM playlists WHERE playlist_id = '{playlist_id}' AND owner = '{self.spotify_id}'")
+        playlist = query.fetchone()
+        return [rules.RuleDescription(**i) for i in json.loads(playlist["rules"])]
+
 
     def call_api(self, method: str, endpoint: str, params: dict = None, body: dict | bytes = None, raw_url: bool = False) -> dict:
         """

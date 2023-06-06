@@ -1,1 +1,1 @@
-from rules.baseRule import BaseRule
+from rules.baseRule import BaseRule, RuleDescription

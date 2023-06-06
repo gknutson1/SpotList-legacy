@@ -109,22 +109,13 @@ def __setup__(config_file: Path) -> None:
                 thumbnail   TEXT,
                 created     INT not null,
                 last_built  INT,
+                rules       TEXT,
                 owner       TEXT not null
                     constraint user_fk
                         references users
             )    
     ''')
 
-        db.execute('''
-            create table if not exists rules(
-                playlist   TEXT not null
-                    constraint playlist_fk
-                        references playlists,
-                rule_id    TEXT not null,
-                data       TEXT not null,
-                exec_order INT  not null
-            );
-        ''')
         db.commit()
 
 

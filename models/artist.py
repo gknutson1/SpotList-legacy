@@ -13,6 +13,9 @@ class Artist(BaseModel):
     images: list[str] = Field(description="A list of 0-3 thumbnail images for the artist, "
                                           "returned by size in descending order.")
 
+    def __eq__(self, other):
+        return isinstance(other, Artist) and self.spotify_id == other.spotify_id
+
     @staticmethod
     def from_raw(raw: dict):
         return Artist(

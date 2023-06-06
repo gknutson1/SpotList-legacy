@@ -9,3 +9,8 @@ class Playlist(BaseModel):
     last_built: str = Field(description="Last time the playlist was built. May be `Null` if it has not been built yet.")
     rule_count: int = Field(description="Number of rules that define the playlist.")
     is_public: bool = Field(description="True if playlist is public, False otherwise.")
+
+
+class PlaylistCreationData(BaseModel):
+    playlist_id: str = Field(description="ID of the playlist")
+    url: str = Field(description="URL of the playlist")
