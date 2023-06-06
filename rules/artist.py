@@ -41,7 +41,7 @@ class Artist(BaseRule):
                                    Track.from_raw(i | {"album": album}) not in tracks)
 
                         if not album_tracks['next']: break
-                        album_tracks = user.get(album['next'], raw_url=True)
+                        album_tracks = user.get(album_tracks['next'], raw_url=True)
 
         return tracks
 
