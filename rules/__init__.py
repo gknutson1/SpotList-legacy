@@ -1,4 +1,4 @@
-from rules.baseRule import BaseRule, RuleDescription, RuleData
+from rules.baseRule import BaseRule, RuleDescription, RuleData, RuleType
 
 from rules.after_date import AfterDate
 from rules.album import Album

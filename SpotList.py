@@ -1,3 +1,4 @@
+import json
 import logging
 import time
 import uuid
@@ -149,6 +150,8 @@ async def create_playlist(
         values ('{playlist_id}', '{name}', '{description}', '{time.time()}', '{user_id}')
     """)
 
+    cfg.db.commit()
+
     return models.PlaylistCreationData(playlist_id=playlist_id, url=playlist_url)
 
 
@@ -204,7 +207,9 @@ async def set_playlist_rules(
     if not query.fetchone()[0]:
         return HTTPException(status.HTTP_404_NOT_FOUND)
 
-    cfg.db.execute(f"UPDATE playlists SET rules = '{rule_list}' WHERE playlist_id = '{playlist_id}' AND owner = '{user_id}'")
+    print([i.json() for i in rule_list])
+
+    cfg.db.execute(f"UPDATE playlists SET rules = '{json.dumps([i.json() for i in rule_list])}' WHERE playlist_id = '{playlist_id}' AND owner = '{user_id}'")
     cfg.db.commit()
     return
 
@@ -216,7 +221,17 @@ async def build_playlist(
         playlist_id: Annotated[str, Path(description="ID of the playlist to build")]
         ):
     user = User(user_id, token)
-    return HTTPException(status.HTTP_501_NOT_IMPLEMENTED)
+    rule_list = user.get_playlist_rules(playlist_id)
+    tracks: list[models.track] = []
+    for i in rule_list:
+        if i.type == rules.RuleType.Artist:
+            rule = rules.Artist
+        if i.is_add:
+            rule.add_tracks(user, tracks, i.data)
+        else:
+            rule.remove_tracks(user, tracks, i.data)
+
+    return
 
 
 @app.get("/auth", status_code=status.HTTP_303_SEE_OTHER, name="Get a Spotify authorization URL to create a user")
