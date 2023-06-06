@@ -242,7 +242,7 @@ async def build_playlist(
     # user.put(f"/playlists/{playlist_id}/tracks", params={"uris": None})
 
     for offset in range(0, len(tracks), 100):
-        user.post(f"/playlists/{playlist_id}/tracks", body={"uris": [f"spotify:track:{i['uri']}" for i in tracks[offset:offset + 100]]})
+        user.post(f"/playlists/{playlist_id}/tracks", body={"uris": [f"spotify:track:{i.spotify_id}" for i in tracks[offset:offset + 100]]})
     return
 
 
